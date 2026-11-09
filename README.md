@@ -2,7 +2,7 @@
 
 Простой веб-сайт для списка дел на сегодня. Тестовое задание на стажировку.
 
-**Сайт:** _ссылка появится после публикации на GitHub Pages_
+**Сайт:** https://alina170522.github.io/todo-list/
 
 ## Что умеет
 
@@ -38,13 +38,9 @@ npm run build    # сборка в папку dist
 npm run preview  # посмотреть собранную версию
 ```
 
-## Публикация на GitHub Pages
+## Публикация
 
-1. Загрузите проект в репозиторий `todo-list` на GitHub, ветка `main`.
-2. В репозитории: **Settings → Pages → Source: GitHub Actions**.
-3. После каждого push в `main` workflow `.github/workflows/deploy.yml` соберёт и опубликует сайт по адресу `https://<логин>.github.io/todo-list/`.
-
-Если репозиторий называется иначе, поменяйте ссылку в `src/config.js`.
+Сайт публикуется на GitHub Pages автоматически: после каждого push в ветку `main` workflow `.github/workflows/deploy.yml` собирает проект и выкладывает папку `dist`.
 
 ## Структура
 
@@ -77,7 +73,7 @@ tests/e2e.py               — проверка в браузере (Playwright)
 
 ## Проверка
 
-`tests/e2e.py` проходит 58 проверок в Chrome:
+`tests/e2e.py` проходит 59 проверок в Chrome:
 
 - пустой ввод и ввод из одних пробелов;
 - добавление, склонение слова «дело»;
