@@ -89,6 +89,8 @@ try:
         check("удаление: фокус на «Вернуть»", page.evaluate("document.activeElement.textContent.trim()") == "Вернуть")
         check("удаление: стикер без удаляемой (4 дела)", "4 дела" in page.locator(".sticker__count").inner_text())
         check("удаление: чекбокс заблокирован", page.locator(".check__input").nth(1).is_disabled())
+        check("удаление: настоящий чекбокс не проступает квадратом",
+              page.locator(".check__input").nth(1).evaluate("el => getComputedStyle(el).opacity") == "0")
         page.screenshot(path=f"{SHOTS}/03-pending-1280.png", full_page=True)
         page.wait_for_timeout(1300)
         check("отсчёт идёт (≤4 с)", any(f"через {n} с" in page.locator(".undo").inner_text() for n in (3, 4)))

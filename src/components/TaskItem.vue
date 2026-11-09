@@ -130,10 +130,18 @@ watch(
   outline-offset: 2px;
 }
 
-.check__input:disabled,
-.check__input:disabled + .check__box {
+/* Полупрозрачным делаем только нарисованный кружок.
+   Настоящий чекбокс всегда остаётся невидимым (opacity: 0), иначе проступает квадратом. */
+.check__input:disabled {
   cursor: default;
+}
+
+.check__input:disabled + .check__box {
   opacity: 0.4;
+}
+
+.is-pending .check {
+  cursor: default;
 }
 
 .check__text {
