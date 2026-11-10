@@ -30,7 +30,7 @@ watch(text, () => {
   if (error.value) error.value = ''
 })
 
-defineExpose({ focus: () => input.value?.focus() })
+defineExpose({ focus: (options) => input.value?.focus(options) })
 </script>
 
 <template>
@@ -130,6 +130,21 @@ defineExpose({ focus: () => input.value?.focus() })
 
   .form__button {
     padding: 0 16px;
+  }
+}
+
+/* Самые узкие экраны: кнопка компактнее, чтобы подсказка в поле не обрезалась */
+@media (max-width: 359px) {
+  .form__row {
+    gap: 8px;
+  }
+
+  .form__input {
+    padding: 0 12px;
+  }
+
+  .form__button {
+    padding: 0 12px;
   }
 }
 

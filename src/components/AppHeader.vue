@@ -207,6 +207,7 @@ onBeforeUnmount(() => {
   font-size: 30px;
   font-weight: 500;
   line-height: 1;
+  white-space: nowrap;
 }
 
 @media (max-width: 600px) {
@@ -216,6 +217,17 @@ onBeforeUnmount(() => {
 
   .brand {
     font-size: 22px;
+  }
+}
+
+/* Самые узкие экраны: шапка остаётся в одну строку */
+@media (max-width: 359px) {
+  .date__day {
+    font-size: 30px;
+  }
+
+  .brand {
+    font-size: 18px;
   }
 }
 </style>

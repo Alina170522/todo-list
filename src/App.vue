@@ -5,6 +5,7 @@ import TaskSticker from './components/TaskSticker.vue'
 import TaskForm from './components/TaskForm.vue'
 import TaskItem from './components/TaskItem.vue'
 import AppFooter from './components/AppFooter.vue'
+import ScrollTopButton from './components/ScrollTopButton.vue'
 import { useTasks } from './composables/useTasks.js'
 
 const INPUT_ID = 'new-task'
@@ -26,6 +27,11 @@ watch(
     if (document.activeElement === document.body) form.value?.focus()
   },
 )
+
+// Кнопка «наверх»: страница уже прокручивается вверх, курсор сразу ставим в поле ввода.
+function focusInput() {
+  form.value?.focus({ preventScroll: true })
+}
 </script>
 
 <template>
@@ -64,6 +70,7 @@ watch(
     </main>
 
     <AppFooter />
+    <ScrollTopButton @activate="focusInput" />
   </div>
 </template>
 
@@ -75,9 +82,13 @@ watch(
 }
 
 .card {
-  width: min(640px, 100% - 24px);
+  /* Внутренний отступ по бокам. Стикер читает его, чтобы встать на правую рамку. */
+  --card-pad-x: 32px;
+
+  /* Поля по бокам не меньше 32px: за рамку выглядывают петли скрепки */
+  width: min(640px, 100% - 64px);
   margin: 32px auto 24px;
-  padding: 28px 32px 20px;
+  padding: 28px var(--card-pad-x) 20px;
   background: rgba(255, 255, 255, 0.3);
   -webkit-backdrop-filter: blur(1.5px);
   backdrop-filter: blur(1.5px);
@@ -86,13 +97,18 @@ watch(
   box-shadow: 0 10px 40px rgba(23, 23, 26, 0.05);
 }
 
+/* Стикер стоит поверх правого края (position: absolute в TaskSticker),
+   поэтому блок задаёт высоту под него, а текст прижат к низу. */
 .intro {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
   align-items: flex-end;
-  gap: 12px 20px;
+  min-height: 136px;
   margin-top: 18px;
+}
+
+.intro__text {
+  max-width: calc(100% - 150px);
 }
 
 .bubble {
@@ -151,8 +167,12 @@ watch(
 
 @media (max-width: 600px) {
   .card {
+    --card-pad-x: 16px;
+
+    /* Поля 16px: в них помещаются петли уменьшенной скрепки */
+    width: calc(100% - 32px);
     margin: 12px auto 20px;
-    padding: 18px 16px 14px;
+    padding: 18px var(--card-pad-x) 14px;
     border-radius: 16px;
   }
 
@@ -162,7 +182,12 @@ watch(
   }
 
   .intro {
-    gap: 12px;
+    min-height: 104px;
+    margin-top: 14px;
+  }
+
+  .intro__text {
+    max-width: 100%;
   }
 }
 </style>
