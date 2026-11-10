@@ -1,5 +1,4 @@
 # Публикация на GitHub Pages при каждом push в ветку main.
-# В настройках репозитория: Settings → Pages → Source: GitHub Actions.
 name: Deploy to GitHub Pages
 
 on:
