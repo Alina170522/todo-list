@@ -52,6 +52,12 @@ const year = new Date().getFullYear()
 }
 
 @media (max-width: 600px) {
+  .footer {
+    width: calc(100% - 32px);
+    /* место под кнопку «наверх», чтобы она не закрывала футер в конце страницы */
+    padding-bottom: 80px;
+  }
+
   .footer__row {
     flex-direction: column;
   }

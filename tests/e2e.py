@@ -167,11 +167,21 @@ try:
         check("axe 1280: нарушений нет", len(v) == 0, json.dumps(v, ensure_ascii=False))
 
         # 13. Адаптив
-        for w, h in ((360, 780), (375, 812), (768, 1024), (1280, 900), (1440, 900)):
+        for w, h in ((320, 700), (360, 780), (375, 812), (414, 860), (768, 1024), (1280, 900), (1440, 900)):
             page.set_viewport_size({"width": w, "height": h})
             page.wait_for_timeout(200)
             sw = page.evaluate("document.documentElement.scrollWidth")
             check(f"{w}px: нет горизонтальной прокрутки", sw <= w, f"scrollWidth={sw}")
+            geo = page.evaluate("""() => {
+              const r = s => document.querySelector(s).getBoundingClientRect();
+              const card = r('.card'), st = r('.sticker'), bub = r('.bubble'), mark = r('.title__mark'), clip = r('.clip--front');
+              const hit = (a, b) => !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
+              return { over: Math.round(st.right - card.right), clipOnBorder: clip.left < card.right && clip.right > card.right,
+                       clipRight: Math.round(clip.right), vw: innerWidth, hitText: hit(st, bub) || hit(st, mark) }
+            }""")
+            check(f"{w}px: стикер заходит за рамку, скрепка лежит на рамке", geo["over"] > 0 and geo["clipOnBorder"], str(geo))
+            check(f"{w}px: скрепка не выходит за экран", geo["clipRight"] <= geo["vw"], str(geo))
+            check(f"{w}px: стикер не закрывает реплику и заголовок", not geo["hitText"], str(geo))
             fs = page.evaluate("getComputedStyle(document.getElementById('new-task')).fontSize")
             if w <= 600:
                 check(f"{w}px: шрифт поля 16px", fs == "16px", fs)
@@ -182,6 +192,27 @@ try:
         page.locator(".item__remove").nth(1).click()
         page.screenshot(path=f"{SHOTS}/07-pending-375.png", full_page=True)
         page.get_by_role("button", name="Вернуть").click()
+
+        # 13a. Кнопка «наверх»
+        page.set_viewport_size({"width": 375, "height": 700})
+        page.evaluate(f"localStorage.setItem('{KEY}', JSON.stringify(Array.from({{length: 25}}, (_, i) => ({{id: 'b' + i, text: 'Задача номер ' + (i + 1), done: i % 3 === 0}}))))")
+        page.reload(); page.wait_for_timeout(300)
+        to_top = page.get_by_role("button", name="Наверх, к добавлению задачи")
+        check("наверх: в начале страницы кнопки нет", not to_top.is_visible())
+        page.mouse.wheel(0, 1500); page.wait_for_timeout(600)
+        check("наверх: после прокрутки кнопка появилась", to_top.is_visible())
+        page.screenshot(path=f"{SHOTS}/08-to-top-375.png")
+        to_top.click(); page.wait_for_timeout(1300)
+        check("наверх: страница вернулась к началу", page.evaluate("scrollY") < 5, str(page.evaluate("scrollY")))
+        check("наверх: курсор в поле ввода", page.evaluate("document.activeElement.id") == "new-task")
+        page.wait_for_timeout(400)
+        check("наверх: наверху кнопка скрылась", not to_top.is_visible())
+        page.mouse.wheel(0, 5000); page.wait_for_timeout(600)
+        v = run_axe(page)
+        check("axe 375 с кнопкой «наверх»: нарушений нет", len(v) == 0, json.dumps(v, ensure_ascii=False))
+        page.evaluate(f"localStorage.setItem('{KEY}', JSON.stringify([{{id: 's1', text: 'Одна задача', done: false}}]))")
+        page.reload(); page.mouse.wheel(0, 3000); page.wait_for_timeout(500)
+        check("наверх: при коротком списке кнопки нет", not to_top.is_visible())
 
         # 14. Повреждённые данные
         page.evaluate(f"localStorage.setItem('{KEY}', '{{не json')")
